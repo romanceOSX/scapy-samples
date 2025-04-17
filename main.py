@@ -11,6 +11,18 @@ class MyClass:
     def __str__(self) -> str:
         return "MyClass str"
 
+class Foo:
+    # the staticmethod decorator makes the function available both
+    # in instances and non-instances
+    # in the docs it is described as "disables the first implicit self argument"
+    @staticmethod
+    def create():
+        return Foo()
+
+def _class_decorators_test() -> None:
+    foo = Foo.create()
+    foo.create()
+
 # Naming convention:
 # factory functions start with ip_*:
 # ip_address, ip_network, ip_interface...
@@ -68,7 +80,8 @@ def _test_formatting() -> None:
     ip_addr = ip.ip_address("fe80::1")
 
 def main():
-    _test_ipaddress()
+    _class_decorators_test()
+    #_test_ipaddress()
 
 if __name__ == "__main__":
     main()
