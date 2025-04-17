@@ -19,9 +19,20 @@ class Foo:
     def create():
         return Foo()
 
+    def from_string(str: str):
+        print(f"This is an string! {str}")
+        return Foo()
+
+    @classmethod
+    def create_from_string(cls, str: str):
+        pass
+
 def _class_decorators_test() -> None:
     foo = Foo.create()
     foo.create()
+    # note that the following will work because we are passing self as the first
+    # argument, @classmethod prevents this
+    a = foo.from_string()
 
 # Naming convention:
 # factory functions start with ip_*:
@@ -34,11 +45,6 @@ def _test_ipaddress() -> None:
     ip4_addr = ip.ip_address("127.0.0.1")
     ip6_addr = ip.ip_address("fe80::1")
     # there is no __bytes__ magic method, use packed instead
-    print(ip4_addr.packed)
-
-    # or directly
-    ip4_specific_addr = ip.IPv4Address(1)
-    print(f"Directly from ipv4 class: {ip4_specific_addr=}")
 
     # we can also create networks
     # note that a network does not describe specific addresses
