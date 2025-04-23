@@ -1,5 +1,7 @@
 import scapy.all as sp
 import ipaddress as ip
+import threading
+from threading import Thread, Lock
 
 class MyClass:
     def __init__(self) -> None:
@@ -85,9 +87,73 @@ def _test_formatting() -> None:
 
     ip_addr = ip.ip_address("fe80::1")
 
+# With statement, context managers
+# --> https://docs.python.org/3/reference/compound_stmts.html#the-with-statement
+# --> https://docs.python.org/3/reference/datamodel.html#context-managers
+def _test_context_protocol():
+    pass
+
+# A layer always has a parent
+# two layers can have the same parent
+# a layer can have multiple parents
+
+class Service:
+    _class_count: int = 0
+
+    def __init__(self, parent: Service | None = None, name: str | None = None, action) -> None:
+        self.parent = parent
+        self.name = Service._generate_name()
+        self.action = _ServiceAction(self, action)
+        self.done_event = threading.Event()
+
+    @staticmethod
+    def _generate_name() -> str:
+        Service._class_count += 1
+        return "Service" + str(Service._class_count)
+
+    def _service_run(self) -> None:
+        raise NotImplementedError
+
+    def run(self) -> None:
+        with self:
+
+    def __enter__(self):
+        if self.parent and self.parent.done_event:
+            print("Waiting for parent layer to finish...")
+            self.parent.done_event.wait()
+            print(f"Starting f{self.name}")
+
+class _ServiceAction:
+    def __init__(self, parent_service: Service, action) -> None:
+        self.parent_service = parent_service
+
+    def __enter__(self):
+        if self.parent_service and self.parent_service.done_event:
+            print("Waiting for parent layer to finish...")
+            self.parent_service.done_event.wait()
+            print(f"Starting f{self.parent_service.name}")
+
+
+
 def main():
     _class_decorators_test()
     #_test_ipaddress()
+    ns = NetStack()
+    ns2 = NetStack()
+    arp = ArpService()
+    ns.add(arp())
+    ns.add(ACService())
+    ns.run()
+
+    ns.add(arp)
+    ns.run()
+
+    # Inside NetStack
+    self.parent = parent
+    self.done_event = not done
+    self.
+
+
 
 if __name__ == "__main__":
     main()
