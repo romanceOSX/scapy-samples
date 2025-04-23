@@ -1,0 +1,25 @@
+These are just some notes while I was inspecting python's ipadress module implementation
+--> https://docs.python.org/3/library/ipaddress.html
+
+_IPAddressBase
+    - its properties consume methods from its child's(_BaseV4), which is tied by
+      IPv4Address
+      You can call an _BaseV4 method from _BaseAddress class if the child inherits from
+      both _BaseV4 and _BaseAddress
+    - This is implemented more as a trait, as in, you should have all of the stuff
+      I am using in some way or another
+    + 'mother class'
+    + properties (just getters)
+    + classmethods
+
+_BaseAddress(_IPAddressBase)
+    + magic methods, lots of it
+
+_BaseV4
+    + bunch of classmethods
+    + 2 properties getters, not setters
+    
+
+IPv4Address(_BaseV4, _BaseAddress)
+    + 
+
