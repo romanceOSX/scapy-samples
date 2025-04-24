@@ -1,4 +1,6 @@
-import scapy.all as sp
+import time
+from os import wait
+#import scapy.all as sp
 import ipaddress as ip
 import threading
 from threading import Thread, Lock
@@ -97,13 +99,21 @@ def _test_context_protocol():
 # two layers can have the same parent
 # a layer can have multiple parents
 
+
+# an event just consist of a flag that is either:
+#    - set()
+#    - clear()
+#    - waite()'ed on'
+
+# Service class representation
 class Service:
     _class_count: int = 0
 
-    def __init__(self, parent: Service | None = None, name: str | None = None, action) -> None:
+    # TODO: pass an action / lambda to the constructor
+    def __init__(self, parent = None, name: str | None = None) -> None:
         self.parent = parent
         self.name = Service._generate_name()
-        self.action = _ServiceAction(self, action)
+        #self.action = _ServiceAction(self, action)
         self.done_event = threading.Event()
 
     @staticmethod
@@ -115,13 +125,24 @@ class Service:
         raise NotImplementedError
 
     def run(self) -> None:
+        # this waits for the parent's action to be done, 
+        # and potentially triggers the next Service's action
         with self:
+            print(f"Running Service {self.name}")
+            time.sleep(3)
 
+    # context manager protocol
     def __enter__(self):
+        # wait for parent service to finish running
         if self.parent and self.parent.done_event:
             print("Waiting for parent layer to finish...")
             self.parent.done_event.wait()
             print(f"Starting f{self.name}")
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        # set this layer to finish
+        print(f"Ending f{self.name}")
+        self.done_event.set()
 
 class _ServiceAction:
     def __init__(self, parent_service: Service, action) -> None:
@@ -133,27 +154,33 @@ class _ServiceAction:
             self.parent_service.done_event.wait()
             print(f"Starting f{self.parent_service.name}")
 
+def _service_test():
+    s1 = Service(name="First_service")
+    s2 = Service(parent=s1, name="Second_service")
 
+    services = [s1, s2]
+
+    for s in services:
+        s.run()
 
 def main():
-    _class_decorators_test()
-    #_test_ipaddress()
-    ns = NetStack()
-    ns2 = NetStack()
-    arp = ArpService()
-    ns.add(arp())
-    ns.add(ACService())
-    ns.run()
+    #_class_decorators_test()
+    ##_test_ipaddress()
+    #ns = NetStack()
+    #ns2 = NetStack()
+    #arp = ArpService()
+    #ns.add(arp())
+    #ns.add(ACService())
+    #ns.run()
 
-    ns.add(arp)
-    ns.run()
+    #ns.add(arp)
+    #ns.run()
 
-    # Inside NetStack
-    self.parent = parent
-    self.done_event = not done
-    self.
-
-
+    ## Inside NetStack
+    #self.parent = parent
+    #self.done_event = not done
+    #self.
+    _service_test()
 
 if __name__ == "__main__":
     main()
