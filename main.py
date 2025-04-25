@@ -106,6 +106,7 @@ def _test_context_protocol():
 #    - waite()'ed on'
 
 # Service class representation
+# TODO: services should be threaded
 class Service:
     _class_count: int = 0
 
@@ -115,6 +116,7 @@ class Service:
         self.name = Service._generate_name()
         #self.action = _ServiceAction(self, action)
         self.done_event = threading.Event()
+        self._thread = threading.Thread(target=self._service_run)
 
     @staticmethod
     def _generate_name() -> str:
@@ -158,7 +160,7 @@ def _service_test():
     s1 = Service(name="First_service")
     s2 = Service(parent=s1, name="Second_service")
 
-    services = [s1, s2]
+    services = [s2, s1]
 
     for s in services:
         s.run()
