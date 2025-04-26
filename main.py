@@ -107,6 +107,7 @@ def _test_context_protocol():
 
 # Service class representation
 # TODO: services should be threaded
+# FIX: the operand itself should declare when to actually set the flag
 class Service:
     _class_count: int = 0
 
