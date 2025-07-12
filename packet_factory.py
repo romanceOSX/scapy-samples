@@ -37,6 +37,14 @@ class PacketBuilder:
         for l in self._layers:
             l.calculate_parent_fields()
 
+def build_acf_over_ip4(acf: bytes):
+    return b'213123'
+
+def test_interface() -> None:
+    acf = bytes.fromhex('223242afe')
+    p = build_acf_over_ip4(acf)
+    pass
+
 def test_packet_crafter() -> None:
     ip4_acf_packet = PacketBuilder(host).add_layer(IPv4(dst=""))
     pass
